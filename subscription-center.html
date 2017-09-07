@@ -9,8 +9,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdn.ravenjs.com/3.17.0/raven.min.js" crossorigin="anonymous"></script>
-    <!--For Mobile Debugging
-    <script src="http://198.61.176.55:8080/target/target-script-min.js#anonymous"></script>-->
 
     <title>Subscription Center</title>
     <style>
@@ -216,7 +214,7 @@
 
             xhr.open('POST', 'https://anannet.azurewebsites.net/api/GetSubscription', true);
             xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.setRequestHeader("x-functions-key", "/KcntQOQ7u6Z9ETEAHn8Db4L3xkVlUGgwZ/n5VUomk45yjWREau7sw==");
+            xhr.setRequestHeader("x-functions-key", "vS1cVk5ANnfgMPpsvhY1OSrxES7CUwa6qRYUDMqQ42ysyg96jGggMg==");
             xhr.setRequestHeader("Cache-Control", "no-cache");
 
             //Sending the subscriberKey to the server
@@ -227,7 +225,7 @@
                 if (xhr.readyState === DONE) {
                     if (xhr.status === OK) {
                         data = JSON.parse(xhr.responseText);
-
+                        console.log(data);
                         //Generate the subscriptions based on account status
                         generateSubscriptions(data);
                     } else {
@@ -353,7 +351,7 @@
 
             xhr2.open('POST', updateSubscriptionsApiUrl);
             xhr2.setRequestHeader("Content-Type", "application/json");
-            xhr2.setRequestHeader("x-functions-key", "/KcntQOQ7u6Z9ETEAHn8Db4L3xkVlUGgwZ/n5VUomk45yjWREau7sw==");
+            xhr2.setRequestHeader("x-functions-key", "vS1cVk5ANnfgMPpsvhY1OSrxES7CUwa6qRYUDMqQ42ysyg96jGggMg==");
             xhr2.setRequestHeader("Cache-Control", "no-cache");
 
             //Send JSON object to the server
@@ -381,7 +379,7 @@
 
             xhr3.open('POST', doNotEmailApiUrl);
             xhr3.setRequestHeader("Content-Type", "application/json");
-            xhr3.setRequestHeader("x-functions-key", "/KcntQOQ7u6Z9ETEAHn8Db4L3xkVlUGgwZ/n5VUomk45yjWREau7sw==");
+            xhr3.setRequestHeader("x-functions-key", "vS1cVk5ANnfgMPpsvhY1OSrxES7CUwa6qRYUDMqQ42ysyg96jGggMg==");
             xhr3.setRequestHeader("Cache-Control", "no-cache");
 
 
