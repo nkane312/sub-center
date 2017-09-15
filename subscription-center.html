@@ -312,9 +312,10 @@
                 if (i === 0 || (i + 1) % 4 === 0) {
                     d3.select('#' + subPanelId)
                         .classed('col-md-pull-1', true)
+                        .style('clear', 'both');
                 } else if ((i + 1) % 3 === 0) {
                     d3.select('#' + subPanelId)
-                        .classed('col-md-push-1', true)
+                        .classed('col-md-push-1', true);
                 }
             }
             d3.select('.loader')
