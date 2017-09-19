@@ -69,17 +69,21 @@
             padding: 15px;
         }
 
-        .subs-panel:hover {
+        .nontouch:hover {
             background-color: #00529c;
         }
 
-        .subs-panel:hover>div>p,
-        .subs-panel:hover>div>h5 {
+        .nontouch:hover>div>p,
+        .nontouch:hover>div>h5 {
             color: #fff;
         }
 
         .subscribed {
             background-color: #00529c;
+        }
+
+        .changed {
+            background-color: #c0d1e2;
         }
 
         .subscribed>div>p,
@@ -92,7 +96,7 @@
         }
 
         .btn-group .active p {
-            font-size: 16px;
+            font-size: 15px;
             margin: 0px;
             padding: 0px;
             color: #fff;
@@ -102,6 +106,10 @@
         .btn-primary {
             background-color: #00529c !important;
             width: 100%;
+        }
+
+        label.btn-primary {
+            white-space: normal;
         }
 
         .btn-group .btn-warning {
@@ -234,10 +242,12 @@
                 }
             }
         });
-        function inputClick(subId) {
+        //Allows the description to be clickable, allowing the user to click anywhere on the panel
+        function inputClick(subId, subPanelId) {
             document.getElementById(subId).click();
         }
         function generateSubscriptions(data) {
+            var touchsupport = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
             var i;
             for (i = 0; i < data.SubscriptionList.length; i++) {
                 //Creates variables based off response data
@@ -260,7 +270,8 @@
                 //Creates html for subscription panels
                 d3.select('#subscriptions-container')
                     .append('div')
-                    .classed('col-md-4', true)
+                    .classed('col-lg-4', true)
+                    .append('div')
                     .classed('subs-panel', true)
                     .classed('mb-30', true)
                     .classed(subStatus, true)
@@ -272,7 +283,7 @@
                     .attr('type', 'checkbox')
                     .attr('id', subId)
                     .attr('name', subId)
-                    .attr('autocomplete', 'off')
+                    .attr('autocomplete', 'off');
                 d3.select('#' + inputDivId)
                     .append('div')
                     .classed('btn-group', true)
@@ -298,25 +309,27 @@
                 d3.select('#' + subPanelId)
                     .append('div')
                     .attr('id', descDivId)
-                    .attr('onclick', "inputClick('" + subId + "')")
+                    .attr('onclick', "inputClick('" + subId + "', '" + subPanelId + "')")
                     .append('p')
                     .text(subDesc);
                 d3.select('#' + descDivId)
                     .append('h5')
                     .classed('text-center', true)
                     .text('click to be ' + reverseStatus);
+                if (!touchsupport) {
+                    d3.select('#' + subPanelId)
+                        .classed('nontouch', true);
+                }
                 if (subValue === true) {
                     d3.select('#' + subId)
                         .attr('checked', true);
                 }
                 if (i === 0 || (i + 1) % 4 === 0) {
-                    d3.select('#' + subPanelId)
-                        .classed('col-md-pull-1', true)
-                        .style('clear', 'both');
-                } else if ((i + 1) % 3 === 0) {
-                    d3.select('#' + subPanelId)
-                        .classed('col-md-push-1', true);
+                    var panelParent = document.getElementById(subPanelId).parentElement;
+                    panelParent.style = 'clear: both';
                 }
+                d3.select('#' + subId)
+                    .attr('onclick', "subClick('" + subPanelId + "', '" + descDivId + "', '" + subId + "')");
             }
             d3.select('.loader')
                 .style('display', 'none');
@@ -440,7 +453,7 @@
                 var i;
                 for (i = 0; i < subsList.length; i++) {
                     var subPanelId = 'sub-panel-' + i;
-                    var subValue = document.getElementById('sub-' + i).checked
+                    var subValue = document.getElementById('sub-' + i).checked;
                     var subStatus = document.getElementById('desc-div-' + i).childNodes[1];
                     if (subValue === true) {
                         d3.select('#' + subPanelId)
@@ -454,6 +467,37 @@
                         subStatus.textContent = 'click to be subscribed';
                     }
                 }
+            }
+        }
+        //Sets whether the subscription has been changed or not when clicked before confirmed/updated
+        function subClick(subPanelId, descDivId, subId) {
+            var subPanel = document.getElementById(subPanelId);
+            var subValue = document.getElementById(subId).checked;
+            var subStatus = document.getElementById(descDivId).childNodes[1];
+            if (subValue === true) {
+                if (subPanel.classList.contains('changed')) {
+                    d3.select('#' + subPanelId)
+                        .classed('changed', false)
+                        .classed('subscribed', true)
+                        .classed('unsubscribed', false);
+                } else {
+                    d3.select('#' + subPanelId)
+                        .classed('unsubscribed', false)
+                        .classed('changed', true);
+                }
+                subStatus.textContent = 'click to be unsubscribed';
+            } else {
+                if (subPanel.classList.contains('changed')) {
+                    d3.select('#' + subPanelId)
+                        .classed('changed', false)
+                        .classed('subscribed', false)
+                        .classed('unsubscribed', true);
+                } else {
+                    d3.select('#' + subPanelId)
+                        .classed('changed', true)
+                        .classed('subscribed', false);
+                }
+                subStatus.textContent = 'click to be subscribed';
             }
         }
     </script>
@@ -497,10 +541,12 @@
                     <p>At any time, you can change your subscriptions or unsubscribe by updating your preferences below.</p>
                 </div>
             </div>
-            <div class="row" id="subscriptions-container">
+            <div class="container">
+                <div class="row" id="subscriptions-container">
 
+                </div>
+                <!-- /.row -->
             </div>
-            <!-- /.row -->
 
             <center>
                 <div class="loader"></div>
@@ -508,8 +554,8 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <input name="subsSubmit" id="subsSubmit" value="Update" type="button" class="btn btn-default" data-cat="Button" data-action="Click"
-                        data-label="Update" onclick="updateSubs()">
+                    <input name="subsSubmit" id="subsSubmit" value="Confirm" type="button" class="btn btn-default" data-cat="Button" data-action="Click"
+                        data-label="Confirm" onclick="updateSubs()">
                 </div>
             </div>
             <!-- /.row -->
