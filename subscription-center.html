@@ -233,7 +233,6 @@
                 if (xhr.readyState === DONE) {
                     if (xhr.status === OK) {
                         data = JSON.parse(xhr.responseText);
-                        console.log(data);
                         //Generate the subscriptions based on account status
                         generateSubscriptions(data);
                     } else {
@@ -346,6 +345,7 @@
         //Make the second POST request to update the account subscriptions
         function updateSubs() {
             var subKey = getParameterByName('sk');
+            var emailId = getParameterByName('emid');
             var xhr2 = new XMLHttpRequest();
             var updateSubscriptionsApiUrl = 'https://anannet.azurewebsites.net/api/UpdateSubscription';
 
@@ -359,6 +359,7 @@
                 );
             }
             var updateData = JSON.stringify({
+                "EmailId": emailId,
                 "SubscriberKey": subKey,
                 "SubscriptionList": subsArray
             });
