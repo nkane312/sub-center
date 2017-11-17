@@ -261,8 +261,6 @@
             var data;
             var subKey = getParameterByName('sk');
             var xhr = new XMLHttpRequest();
-            var getSubscriptionsApiUrl = 'https://anannet.azurewebsites.net/api/GetSubscription';
-
             xhr.open('POST', 'https://anannet.azurewebsites.net/api/GetSubscription', true);
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.setRequestHeader("x-functions-key", "vS1cVk5ANnfgMPpsvhY1OSrxES7CUwa6qRYUDMqQ42ysyg96jGggMg==");
@@ -411,7 +409,7 @@
             var i;
             for (i = 0; i < subsList.length; i++) {
                 subsArray.push(
-                    { 'DisplayText': document.getElementById('label-div-' + i).lastElementChild.firstElementChild.textContent, 'Value': document.getElementById('sub-' + i).checked }
+                    { 'DisplayText': document.getElementById('sub-panel-' + i).firstElementChild.textContent, 'Value': document.getElementById('sub-' + i).checked }
                 );
             }
             var updateData = JSON.stringify({
@@ -445,6 +443,7 @@
         function doNotEmail() {
             var data;
             var subKey = getParameterByName('sk');
+            var emailId = getParameterByName('emid');
             var xhr3 = new XMLHttpRequest();
             var doNotEmailApiUrl = 'https://anannet.azurewebsites.net/api/UpdateDoNotEmail';
 
@@ -453,9 +452,13 @@
             xhr3.setRequestHeader("x-functions-key", "vS1cVk5ANnfgMPpsvhY1OSrxES7CUwa6qRYUDMqQ42ysyg96jGggMg==");
             xhr3.setRequestHeader("Cache-Control", "no-cache");
 
+            var updateData = JSON.stringify({
+                "SubscriberKey": subKey,
+                "EmailId": emailId
+            });
 
-            //Sending the subscriberKey to the server
-            xhr3.send(subKey);
+            //Sending the subscriberKey and emailId to the server
+            xhr3.send(updateData);
 
             xhr3.onreadystatechange = function () {
                 var DONE = 4; // readyState 4 means the request is done.
