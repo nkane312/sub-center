@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+
+<head>
+    <link rel="stylesheet" href="//digital.ifcj.org/site-assets/css/fonts.min.css">
+    <link rel="stylesheet" href="//digital.ifcj.org/site-assets/css/vendor/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//digital.ifcj.org/site-assets/css/ifcj-styles.min.css">
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.ravenjs.com/3.17.0/raven.min.js" crossorigin="anonymous"></script>
+
+    <title>Subscription Center</title>
+    <style>
+        #subsSubmit {
+            margin: 10px auto 25px;
+            display: block;
+            background: #00529c;
+            color: #fff;
+            font-size: 1.5em;
+            padding-left: 77px;
+            padding-right: 77px;
+            max-width: 100%;
+        }
+
+        #subsSubmit:hover {
+            color: #00529c;
+            background-color: #ffda99;
+        }
+
+        #do-not-email {
+            margin: 10px auto 25px;
+            display: block;
+            background: #fff;
+            color: #00529c;
+            font-size: 1.5em;
+            padding-left: 35px;
+            padding-right: 35px;
+            max-width: 100%;
+        }
+
+        #do-not-email:hover {
+            background-color: #ffda99;
+        }
+
+        .sub-title {
+            text-align: left;
+            margin: 0px;
+            font-size: 1.8em;
+            padding: 15px 0px 0px 15px;
+        }
+
+        .alert {
+            padding: 20px;
+            display: none;
+            color: white;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .closebtn {
+            margin-left: 15px;
+            color: white;
+            font-weight: bold;
+            float: right;
+            font-size: 22px;
+            line-height: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .closebtn:hover {
+            color: black;
+        }
+
+        .success {
+            display: block;
+            background-color: #4CAF50;
+        }
+
+        .failure {
+            display: block;
+            background-color: #a61d26;
+        }
+
+        .changes {
+            display: block;
+            background-color: #ffda99;
+            color: #000;
+        }
+
+        .changes .closebtn {
+            color: #000;
+        }
+
+        .subs-panel {
+            box-shadow: 2px 3px 10px 0px rgba(0, 0, 0, 0.2);
+            padding: 0px;
+            cursor: pointer;
+        }
+
+        .subs-panel>div>p {
+            padding: 15px;
+        }
+
+        .btn-group {
+            display: flex;
+        }
+
+        .btn-group .active p {
+            font-size: 18px;
+            margin: 0px;
+            padding: 0px 40px 0px 0px;
+            color: #00529c;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background-color: #fff !important;
+            border-color: #00529c !important;
+            width: 100%;
+        }
+
+        label.btn-primary {
+            white-space: normal;
+            border-left: none;
+            box-shadow: 6px 3px 10px 0px rgba(0, 0, 0, 0.2) !important;
+        }
+
+        .btn-group .btn-checkbox {
+            font-size: 20px;
+            background: #fff;
+            border: #00529c 1px double;
+            border-right: none;
+            width: auto;
+            box-shadow: 2px 3px 10px 0px rgba(0, 0, 0, 0.2);
+        }
+
+        .changed {
+            background-color: #ffda99;
+        }
+
+        .changed .form-group .btn-group label {
+            background-color: #ffda99 !important;
+            color: #00529c;
+        }
+
+        .subscribed .form-group .btn-group label {
+            background-color: #00529c !important;
+        }
+
+        .subscribed .form-group .btn-group label p {
+            color: #fff;
+        }
+
+        .subscribed:hover .form-group .btn-group label,
+        .subscribed:focus .form-group .btn-group label,
+        .subscribed:active .form-group .btn-group label,
+        .unsubscribed:hover .form-group .btn-group label,
+        .unsubscribed:focus .form-group .btn-group label,
+        .unsubscribed:active .form-group .btn-group label {
+            background-color: #ffda99 !important;
+        }
+
+        .subscribed:hover .form-group .btn-group label p,
+        .subscribed:focus .form-group .btn-group label p,
+        .subscribed:active .form-group .btn-group label p,
+        .subscribed:hover .form-group .btn-group .btn-checkbox,
+        .subscribed:focus .form-group .btn-group .btn-checkbox,
+        .subscribed:active .form-group .btn-group .btn-checkbox,
+        .unsubscribed:hover .form-group .btn-group label p,
+        .unsubscribed:focus .form-group .btn-group label p,
+        .unsubscribed:active .form-group .btn-group label p {
+            color: #00529c;
+        }
+
+        h3 {
+            text-align: center;
+            margin: 10px 0px 15px 0px;
+        }
+
+        hr {
+            border-top-color: #777;
+        }
+
+        .contact {
+            text-align: center;
+        }
+
+        .contact input {
+            height: 45px;
+        }
+
+
+
+        .form-group input[type="checkbox"] {
+            display: none;
+        }
+
+        .form-group input[type="checkbox"]+.btn-group>label span {
+            width: 30px;
+        }
+
+        .form-group input[type="checkbox"]+.btn-group>label span:first-child {
+            display: none;
+        }
+
+        .form-group input[type="checkbox"]+.btn-group>label span:last-child {
+            display: inline-block;
+        }
+
+        .form-group input[type="checkbox"]:checked+.btn-group>label span:first-child {
+            display: inline-block;
+        }
+
+        .form-group input[type="checkbox"]:checked+.btn-group>label span:last-child {
+            display: none;
+        }
+
+        .loader {
+            border: 16px solid #f3f3f3;
+            /* Light grey */
+            border-top: 16px solid #00529c;
+            /* Blue */
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            margin: 25px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media screen and (min-width: 768px) {
+            .contact .form-group {
+                width: 47.5%;
+                margin-bottom: 20px;
+            }
+            .contact .form-group input {
+                width: 90%;
+            }
+        }
+
+        @media screen and (max-width: 370px) {
+            .btn-group .active p {
+                padding: 0px;
+            }
+        }
+    </style>
+    <script>
+        //Make the first POST Request to retrieve the Subscriptions
+        document.addEventListener("DOMContentLoaded", function (event) {
+            Raven.config('https://5fb0fd64de25495ba39ee3166881834e@sentry.io/207547').install();
+            var data;
+            var subKey = getParameterByName('sk');
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'https://anannet.azurewebsites.net/api/GetSubscription', true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.setRequestHeader("x-functions-key", "vS1cVk5ANnfgMPpsvhY1OSrxES7CUwa6qRYUDMqQ42ysyg96jGggMg==");
+            xhr.setRequestHeader("Cache-Control", "no-cache");
+
+            //Sending the subscriberKey to the server
+            xhr.send(subKey);
+            xhr.onreadystatechange = function () {
+                var DONE = 4; // readyState 4 means the request is done.
+                var OK = 200; // status 200 is a successful return.
+                if (xhr.readyState === DONE) {
+                    if (xhr.status === OK) {
+                        data = JSON.parse(xhr.responseText);
+                        //Generate the subscriptions based on account status
+                        generateSubscriptions(data);
+                    } else {
+                        console.log('Error: ' + xhr.status); // An error occurred during the request.
+                    }
+                }
+            }
+        });
+        //Allows the description to be clickable, allowing the user to click anywhere on the panel
+        function inputClick(subId, subPanelId) {
+            document.getElementById(subId).click();
+        }
+        function generateSubscriptions(data) {
+            var touchsupport = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
+            var i;
+            for (i = 0; i < data.SubscriptionList.length; i++) {
+                //Creates variables based off response data
+                var subId = 'sub-' + i;
+                var checkLabelId = 'ch-label-' + i;
+                var inputDivId = 'input-div-' + i;
+                var labelDivId = 'label-div-' + i;
+                var subPanelId = 'sub-panel-' + i;
+                var descDivId = 'desc-div-' + i;
+                var subTitle = data.SubscriptionList[i].DisplayText;
+                var subValue = data.SubscriptionList[i].Value;
+                var subDesc = data.SubscriptionList[i].Description;
+                if (subValue === true) {
+                    var subStatus = 'subscribed';
+                    var reverseStatus = 'unsubscribed';
+                } else {
+                    var subStatus = 'unsubscribed';
+                    var reverseStatus = 'subscribed';
+                }
+                //Creates html for subscription panels
+                d3.select('#subscriptions-container')
+                    .append('div')
+                    .classed('col-lg-4', true)
+                    .append('div')
+                    .classed('subs-panel', true)
+                    .classed('mb-30', true)
+                    .classed(subStatus, true)
+                    .attr('id', subPanelId)
+                    .append('h3')
+                    .classed('sub-title', true)
+                    .attr('onclick', "inputClick('" + subId + "', '" + subPanelId + "')")
+                    .text(subTitle);
+                d3.select('#' + subPanelId)
+                    .append('div')
+                    .attr('id', descDivId)
+                    .attr('onclick', "inputClick('" + subId + "', '" + subPanelId + "')")
+                    .append('p')
+                    .text(subDesc);
+                d3.select('#' + subPanelId)
+                    .append('div')
+                    .classed('form-group', true)
+                    .attr('id', inputDivId)
+                    .append('input')
+                    .attr('type', 'checkbox')
+                    .attr('id', subId)
+                    .attr('name', subId)
+                    .attr('autocomplete', 'off');
+                d3.select('#' + inputDivId)
+                    .append('div')
+                    .classed('btn-group', true)
+                    .attr('id', labelDivId)
+                    .append('label')
+                    .classed('btn', true)
+                    .classed('btn-primary', true)
+                    .classed('btn-checkbox', true)
+                    .attr('id', checkLabelId)
+                    .attr('for', subId)
+                    .append('span')
+                    .classed('glyphicon glyphicon-ok', true);
+                d3.select('#' + checkLabelId)
+                    .append('span')
+                    .text(' ');
+                if (reverseStatus === 'unsubscribed') {
+                    d3.select('#' + labelDivId)
+                        .append('label')
+                        .classed('btn', true)
+                        .classed('btn-primary', true)
+                        .classed('active', true)
+                        .attr('for', subId)
+                        .append('p')
+                        .text('Click to Unsubscribe');
+                } else {
+                    d3.select('#' + labelDivId)
+                        .append('label')
+                        .classed('btn', true)
+                        .classed('btn-primary', true)
+                        .classed('active', true)
+                        .attr('for', subId)
+                        .append('p')
+                        .text('Click to Subscribe');
+                }
+                if (!touchsupport) {
+                    d3.select('#' + subPanelId)
+                        .classed('nontouch', true);
+                }
+                if (subValue === true) {
+                    d3.select('#' + subId)
+                        .attr('checked', true);
+                }
+                if (i % 3 === 0) {
+                    var panelParent = document.getElementById(subPanelId).parentElement;
+                    panelParent.style = 'clear: both';
+                }
+                d3.select('#' + subId)
+                    .attr('onclick', "subClick('" + subPanelId + "', '" + labelDivId + "', '" + subId + "')");
+            }
+            d3.select('.loader')
+                .style('display', 'none');
+        }
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, '\\$&');
+            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
+        //Make the second POST request to update the account subscriptions
+        function updateSubs() {
+            var subKey = getParameterByName('sk');
+            var emailId = getParameterByName('emid');
+            var xhr2 = new XMLHttpRequest();
+            var updateSubscriptionsApiUrl = 'https://anannet.azurewebsites.net/api/UpdateSubscription';
+
+            //Create the JSON object based on user selections
+            var subsList = document.getElementsByClassName('subs-panel');
+            var subsArray = [];
+            var i;
+            for (i = 0; i < subsList.length; i++) {
+                subsArray.push(
+                    { 'DisplayText': document.getElementById('sub-panel-' + i).firstElementChild.textContent, 'Value': document.getElementById('sub-' + i).checked }
+                );
+            }
+            var updateData = JSON.stringify({
+                "EmailId": emailId,
+                "SubscriberKey": subKey,
+                "SubscriptionList": subsArray
+            });
+
+            xhr2.open('POST', updateSubscriptionsApiUrl);
+            xhr2.setRequestHeader("Content-Type", "application/json");
+            xhr2.setRequestHeader("x-functions-key", "vS1cVk5ANnfgMPpsvhY1OSrxES7CUwa6qRYUDMqQ42ysyg96jGggMg==");
+            xhr2.setRequestHeader("Cache-Control", "no-cache");
+
+            //Send JSON object to the server
+            xhr2.send(updateData);
+
+            xhr2.onreadystatechange = function () {
+                var DONE = 4; // readyState 4 means the request is done.
+                var OK = 200; // status 200 is a successful return.
+                if (xhr2.readyState === DONE) {
+                    if (xhr2.status === OK) {
+                        afterSubmit('success', false);
+                    } else {
+                        console.log('Error: ' + xhr2.status); // An error occurred during the request.
+                        afterSubmit('failure', false);
+                    }
+                }
+            }
+        }
+        //Third optional request to opt out of all email
+        function doNotEmail() {
+            var data;
+            var subKey = getParameterByName('sk');
+            var emailId = getParameterByName('emid');
+            var xhr3 = new XMLHttpRequest();
+            var doNotEmailApiUrl = 'https://anannet.azurewebsites.net/api/UpdateDoNotEmail';
+
+            xhr3.open('POST', doNotEmailApiUrl);
+            xhr3.setRequestHeader("Content-Type", "application/json");
+            xhr3.setRequestHeader("x-functions-key", "vS1cVk5ANnfgMPpsvhY1OSrxES7CUwa6qRYUDMqQ42ysyg96jGggMg==");
+            xhr3.setRequestHeader("Cache-Control", "no-cache");
+
+            var updateData = JSON.stringify({
+                "SubscriberKey": subKey,
+                "EmailId": emailId
+            });
+
+            //Sending the subscriberKey and emailId to the server
+            xhr3.send(updateData);
+
+            xhr3.onreadystatechange = function () {
+                var DONE = 4; // readyState 4 means the request is done.
+                var OK = 200; // status 200 is a successful return.
+                if (xhr3.readyState === DONE) {
+                    if (xhr3.status === OK) {
+                        data = JSON.parse(xhr3.responseText);
+                        afterSubmit('success', true);
+                    } else {
+                        console.log('Error: ' + xhr3.status); // An error occurred during the request.
+                        afterSubmit('failure', true);
+                    }
+                }
+            }
+        }
+        //Alert and submit button disabling/reenabling
+        function afterSubmit(status, unsubAll) {
+            var subButton = document.getElementById('subsSubmit');
+            subButton.disabled = true;
+            showAlert(status);
+            resetPanels(status, unsubAll);
+            setTimeout(function () {
+                subButton.disabled = false;
+            }, 2500);
+        }
+        //Allows anchoring to element by id
+        function scrollTo(id) {
+            var ele = document.getElementById(id);
+            var eleRect = ele.getBoundingClientRect();
+            window.scroll(0, eleRect.top);
+        }
+        //Displays and sets content of alert element on page
+        function showAlert(status) {
+            if (status === 'success') {
+                var alertText = 'Update Successful! It may take a few minutes to see your updated subscription statuses.';
+            } else if (status === 'changes') {
+                var alertText = 'Please save your changes below to update your subscription statuses.';
+            } else {
+                var alertText = 'Update Has Failed.';
+            }
+            document.getElementById('update-alert').firstElementChild.click();
+            d3.select('#update-alert')
+                .classed('success', false)
+                .classed('failure', false)
+                .classed('changes', false)
+                .classed(status, true);
+            d3.select('#alert-text')
+                .text(alertText);
+            if (status === 'changes') {
+
+            } else {
+                scrollTo('update-alert');
+            }
+        }
+        //Sets the status of the panel between Subbed or Unsubbed based on user selection
+        function resetPanels(status, unsubAll) {
+            if (status === 'success') {
+                if (unsubAll === true) {
+                    var subsList = document.getElementsByClassName('subs-panel');
+                    var i;
+                    for (i = 0; i < subsList.length; i++) {
+                        var subPanelId = 'sub-panel-' + i;
+                        var subValue = document.getElementById('sub-' + i).checked;
+                        var subStatus = document.getElementById('label-div-' + i).childNodes[1].childNodes[0];
+                        d3.select('#' + subPanelId)
+                            .classed('unsubscribed', true)
+                            .classed('changed', false)
+                            .classed('subscribed', false);
+                        subStatus.textContent = 'Click to Subscribe';
+                    }
+                } else {
+                    var subsList = document.getElementsByClassName('subs-panel');
+                    var i;
+                    for (i = 0; i < subsList.length; i++) {
+                        var subPanelId = 'sub-panel-' + i;
+                        var subValue = document.getElementById('sub-' + i).checked;
+                        var subStatus = document.getElementById('label-div-' + i).childNodes[1].childNodes[0];
+                        if (subValue === true) {
+                            d3.select('#' + subPanelId)
+                                .classed('unsubscribed', false)
+                                .classed('changed', false)
+                                .classed('subscribed', true);
+                            subStatus.textContent = 'Click to Unsubscribe';
+                        } else {
+                            d3.select('#' + subPanelId)
+                                .classed('unsubscribed', true)
+                                .classed('changed', false)
+                                .classed('subscribed', false);
+                            subStatus.textContent = 'Click to Subscribe';
+                        }
+                    }
+
+                }
+            }
+        }
+        //Sets whether the subscription has been changed or not when clicked before confirmed/updated
+        function subClick(subPanelId, labelDivId, subId) {
+            var subPanel = document.getElementById(subPanelId);
+            var subValue = document.getElementById(subId).checked;
+            var subStatus = document.getElementById(labelDivId).childNodes[1].childNodes[0];
+            if (subValue === true) {
+                if (subPanel.classList.contains('changed')) {
+                    d3.select('#' + subPanelId)
+                        .classed('changed', false)
+                        .classed('subscribed', true)
+                        .classed('unsubscribed', false);
+                } else {
+                    d3.select('#' + subPanelId)
+                        .classed('unsubscribed', false)
+                        .classed('changed', true);
+                }
+                subStatus.textContent = 'Click to Unsubscribe';
+            } else {
+                if (subPanel.classList.contains('changed')) {
+                    d3.select('#' + subPanelId)
+                        .classed('changed', false)
+                        .classed('subscribed', false)
+                        .classed('unsubscribed', true);
+                } else {
+                    d3.select('#' + subPanelId)
+                        .classed('changed', true)
+                        .classed('subscribed', false);
+                }
+                subStatus.textContent = 'Click to Subscribe';
+            }
+            if (document.getElementsByClassName('changed').length > 0) {
+                showAlert('changes');
+            } else {
+                document.getElementById('update-alert').firstElementChild.click();
+            }
+        }
+    </script>
+</head>
+<section>
+    <div class="container">
+        <div id="donation-header" class="text-center">
+            <a href="http://www.ifcj.org/">
+                <img class="img-responsive" src="//digital.ifcj.org/site-assets/images/logo.png" alt="International Fellowship of Christians and Jews"
+                    style="display:inline-block;">
+            </a>
+        </div>
+    </div>
+    <!-- /.container -->
+</section>
+<section>
+    <div class="container">
+        <div class="row">
+            <h1>Are You Sure You Want to Unsubscribe?</h1>
+        </div>
+        <!-- /.row -->
+        <div class="row">
+            <div class="col-md-12">
+                <p>We want you to be hearing about what&rsquo;s right for you. Let us know about your interests by clicking
+                    on the topics you find most appealing to you. At any time, you can change your subscriptions or unsubscribe
+                    by updating your preferences below.</p>
+            </div>
+        </div>
+        <!-- /.row -->
+        <div class="alert" id="update-alert">
+            <span class="closebtn" onclick="this.parentElement.classList.remove('success', 'failure', 'changes')">&times;</span>
+            <span id="alert-text"></span>
+        </div>
+        <hr>
+    </div>
+    <!-- /.container -->
+</section>
+<form id="subscriptions-form" action="#" method="post" name="subscriptions">
+    <section>
+        <div class="container">
+            <div class="container">
+                <div class="row" id="subscriptions-container">
+
+                </div>
+                <!-- /.row -->
+            </div>
+
+            <center>
+                <div class="loader"></div>
+            </center>
+
+            <!-- /.row -->
+            <hr>
+            <div class="row">
+                <div class="col-md-12">
+                    <input name="subsSubmit" id="subsSubmit" value="Save Changes" type="button" class="btn btn-default" data-cat="Button" data-action="Click"
+                        data-label="Save Changes" onclick="updateSubs()">
+                </div>
+
+            </div>
+            <div class="row mb-30">
+                <div class="col-md-12">
+                    <input name="do-not-email" id="do-not-email" value="Unsubscribe From All" type="button" class="btn btn-default" data-cat="Button"
+                        data-action="Click" data-label="Unsubscribe From All" onclick="doNotEmail()">
+                </div>
+            </div>
+            <hr>
+            <!-- /.row -->
+        </div>
+        <!-- /.container -->
+    </section>
+    <section>
+        <div class="container">
+            <div class="row">
+                <h3>I would like to follow you socially instead.</h3>
+            </div>
+            <div class="row">
+
+                <div class="col-md-push-3 col-md-4 mb-30">
+                    <a href="https://www.facebook.com/FellowshipFan" target="_blank">
+                        <img src="https://digital.ifcj.org/webicons/webicon-facebook.png" />
+                    </a>
+                    <span>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href="https://www.facebook.com/FellowshipFan" target="_blank">
+                            <strong>Follow on Facebook</strong>
+                        </a>
+                    </span>
+                </div>
+                <div class="col-md-push-3 col-md-4 mb-30">
+                    <a href="https://twitter.com/TheFellowship" target="_blank">
+                        <img src="https://digital.ifcj.org/webicons/webicon-twitter.png" />
+                    </a>
+                    <span>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href="https://twitter.com/TheFellowship" target="_blank">
+                            <strong>Follow on Twitter</strong>
+                        </a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </section>
+</form>
+</body>
